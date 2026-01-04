@@ -1,0 +1,42 @@
+# Render Blueprint Configuration
+# This file allows you to configure your service via Infrastructure as Code
+# Deploy: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: workless-backend
+    runtime: python
+    plan: free  # or 'starter' for always-on ($7/month)
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        fromService:
+          type: web
+          name: workless-backend
+          property: port
+      - key: GEMINI_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true  # Auto-generate secure key
+      - key: JWT_SECRET_KEY
+        generateValue: true  # Auto-generate secure key
+      - key: CORS_ORIGINS
+        sync: false  # Set to your Vercel frontend URL
+      - key: LOG_LEVEL
+        value: INFO
+      - key: UPLOAD_DIR
+        value: ./uploads
+      - key: MAX_FILE_SIZE
+        value: 10485760
+
